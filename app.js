@@ -75,20 +75,51 @@ app.route("/articles")
 
 /////////////////////////////////Request Targeting a Specific Article /////////////////////////////////////
 
-app.route("/articles/:articleTitle").get((req, res) => {
-	console.log(req.params.articleTitle)
-	Article.findOne({ title: req.params.articleTitle })
-		.then((foundArticle) => {
-			if (foundArticle) {
-				res.send(foundArticle)
+app.route("/articles/:articleTitle")
+	.get((req, res) => {
+		console.log(req.params.articleTitle)
+		Article.findOne({ title: req.params.articleTitle })
+			.then((foundArticle) => {
+				if (foundArticle) {
+					res.send(foundArticle)
+				} else {
+					res.send("No match")
+				}
+			})
+			.catch((err) => {
+				res.send(err)
+			})
+	})
+	.put(async (req, res) => {
+		let filter = { title: req.params.articleTitle }
+		let update = { title: req.body.title, content: req.body.content }
+		const updatedDoc = await Article.findOneAndUpdate(filter, update, {
+			new: true
+		})
+		if (updatedDoc !== null) {
+			res.send("Successfully updated!")
+		} else {
+			res.send("Match not found!!")
+		}
+	})
+	.patch((req, res) => {
+		let query = { title: req.params.articleTitle }
+		let update = req.body
+
+		Article.findOneAndUpdate(
+			query,
+			{ $set: update },
+			{
+				new: true
+			}
+		).then((specificUpdatedDoc) => {
+			if (specificUpdatedDoc) {
+				res.send("Successfully updated the specified fields.")
 			} else {
-				res.send("No match")
+				res.send("Match not found!!")
 			}
 		})
-		.catch((err) => {
-			res.send(err)
-		})
-})
+	})
 
 app.listen(4000, function () {
 	console.log("App is listening on port 4000")
