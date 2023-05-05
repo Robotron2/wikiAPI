@@ -5,12 +5,29 @@ const mongoose = require("mongoose")
 
 const app = express()
 
+app.set("view engine", "ejs")
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.static("public"))
 
-app.get("/", function (req, res) {
-	console.log("Welcome to my wikipage")
+mongoose.connect("mongodb://localhost:27017/wikiDB")
+
+const articleSchema = new mongoose.Schema({
+	title: String,
+	content: String
 })
 
-app.listen(3000, function () {
-	console.log("App is listening on port 3000")
+const Article = mongoose.model("Article", articleSchema)
+
+app.get("/articles", function (req, res) {
+	Article.find({}).then((articles) => {
+		if (articles.length !== 0) {
+			res.send(articles)
+		} else {
+			res.send("There are no articles presently ")
+		}
+	})
+})
+
+app.listen(4000, function () {
+	console.log("App is listening on port 4000")
 })
