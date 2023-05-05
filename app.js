@@ -24,6 +24,8 @@ const articleSchema = new mongoose.Schema({
 
 const Article = mongoose.model("Article", articleSchema)
 
+/////////////////////////////////Request Targeting All Article /////////////////////////////////////
+
 app.route("/articles")
 	.get((req, res) => {
 		Article.find({}).then((articles) => {
@@ -70,6 +72,23 @@ app.route("/articles")
 			console.log(response)
 		})
 	})
+
+/////////////////////////////////Request Targeting a Specific Article /////////////////////////////////////
+
+app.route("/articles/:articleTitle").get((req, res) => {
+	console.log(req.params.articleTitle)
+	Article.findOne({ title: req.params.articleTitle })
+		.then((foundArticle) => {
+			if (foundArticle) {
+				res.send(foundArticle)
+			} else {
+				res.send("No match")
+			}
+		})
+		.catch((err) => {
+			res.send(err)
+		})
+})
 
 app.listen(4000, function () {
 	console.log("App is listening on port 4000")
