@@ -69,7 +69,7 @@ app.route("/articles")
 			// }
 			// res.redirect("/articles")
 
-			console.log(response)
+			// console.log(response)
 		})
 	})
 
@@ -117,6 +117,17 @@ app.route("/articles/:articleTitle")
 				res.send("Successfully updated the specified fields.")
 			} else {
 				res.send("Match not found!!")
+			}
+		})
+	})
+	.delete((req, res) => {
+		let deleteQuery = { title: req.params.articleTitle }
+		// Article.deleteOne(deleteQuery,)
+		Article.deleteOne(deleteQuery).then((response) => {
+			if (response.deletedCount !== 0) {
+				res.send("Successfully deleted the specified document.")
+			} else {
+				res.send("Something went wrong!")
 			}
 		})
 	})
